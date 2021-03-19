@@ -35,7 +35,7 @@ exports.createHotel = (req, res, next) => {
 
 exports.searchForReservation = (req, res, next) => {
   const checkReservation = { ...req.body }
-
+  console.log(req.body);
   // searches for available reservations and returns just the hotel_id.
   ReserveSchema.find()
     .then(data => {
