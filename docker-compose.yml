@@ -1,0 +1,34 @@
+version: '3.8'
+
+
+services:
+
+  # Hotel Back-end
+  hotels-backend:
+    container_name: hotel-backend
+    build: ./
+    command: npm run dev
+    working_dir: /usr/src/hotels-backend
+    environment:
+      DATABASE_URL: mongodb://mongodb:27017/?compressors=zlib&gssapiServiceName=mongodb
+    volumes:
+      - ./:/usr/src/hotels-backend
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongodb
+  
+  
+  # MongoDB Database
+  mongodb:
+    image: mongo
+    container_name: mongodb_database
+    environment:
+      - PUID=1000
+      - PGID=1000
+    ports:
+      - 27017:27017
+    volumes:
+      - ./database:/data/db
+    restart: unless-stopped
+    
