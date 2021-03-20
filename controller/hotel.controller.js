@@ -2,6 +2,7 @@ const ReserveSchema = require('../model/reserve.model');
 const HotelSchema = require('../model/hotels.model');
 
 exports.createReservation = (req, res, next) => {
+  console.log(req.body)
   new ReserveSchema({ ...req.body })
     .save()
     .then(data => {
@@ -16,7 +17,6 @@ exports.createReservation = (req, res, next) => {
         })
         .then(data => res.status(200).json("Reservation successful."))
         .catch(err => res.status(400).json("Unable to create reservation."))
-
     })
     .catch(error => {
       console.log(error);
@@ -41,7 +41,6 @@ exports.searchForReservation = (req, res, next) => {
     .then(data => {
       const availableResevation = [];
       if (data.length) {
-
         data.map(reservation => {
           if (checkReservation.arrival_date > reservation.arrival_date &&
             checkReservation.arrival_date > reservation.departure_date) {
@@ -79,9 +78,21 @@ exports.searchForReservation = (req, res, next) => {
             }
             return 0;
           }
-          res.status(200).json(availableHotels.sort(compare));
+          if (!availableHotels.length) {
+            res.status(404).json({
+              hotels: availableHotels,
+              message: "No hotel(s) found."
+            });
+            return;
+          }
+
+
+          res.status(200).json({
+            hotels: availableHotels.sort(compare),
+            message: "Successful."
+          });
         })
         .catch(error => res.status(404).json("Not available."))
     })
-    .catch(error => res.status(400).json("Unsuccessful."))
+    .catch(error => res.status(400).json("No data available."))
 }
