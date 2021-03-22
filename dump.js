@@ -64,7 +64,7 @@ const listOfReservation = [
   }
 ]
 
-const dateFormat = new Date().getFullYear().toString() +
+const todaysDate = new Date().getFullYear().toString() +
   new Date().getMonth().toString() + new Date().getDate().toString();
 
 const checkReservation = {

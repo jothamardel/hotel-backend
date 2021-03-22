@@ -9,9 +9,12 @@ exports.createReservation = (req, res, next) => {
       const _id = data.hotel_id;
       HotelSchema.findOne({ _id })
         .then(doc => {
+          if (doc._doc.number_of_rooms < req.body.number_of_rooms) {
+            throw new Error;
+          }
           if (doc) {
             const newDoc = { ...doc._doc }
-            doc.overwrite({ ...newDoc, number_of_rooms: newDoc.number_of_rooms - 1 });
+            doc.overwrite({ ...newDoc, number_of_rooms: newDoc.number_of_rooms - req.body.number_of_rooms });
             return doc.save();
           }
         })
@@ -35,14 +38,19 @@ exports.createHotel = (req, res, next) => {
 
 exports.searchForReservation = (req, res, next) => {
   const checkReservation = { ...req.body }
-  console.log(req.body);
+  console.log(checkReservation);
+  const todaysDate = new Date().getFullYear().toString() +
+    new Date().getMonth().toString() + new Date().getDate().toString();
   // searches for available reservations and returns just the hotel_id.
   ReserveSchema.find()
     .then(data => {
       const availableResevation = [];
       if (data.length) {
         data.map(reservation => {
-          if (checkReservation.arrival_date >= reservation.departure_date) {
+          if (checkReservation.arrival_date >= todaysDate &&
+            (checkReservation.arrival_date < reservation.arrival_date ||
+              checkReservation.arrival_date > reservation.departure_date)) {
+            console.log(checkReservation.arrival_date, reservation.arrival_date, reservation.departure_date)
             return availableResevation.push(reservation.hotel_id);
           }
           return;
@@ -67,11 +75,12 @@ exports.searchForReservation = (req, res, next) => {
               return;
             });
 
-            // if (data.length) {
-            //   data.map((item, index) => {
-            //     item._id.toString() !== id[index] && item.number_of_rooms > checkReservation.number_of_rooms ? availableHotels.push(item) : null
-            //   });
-            // }
+            // Return hotels not in reservation table
+            if (data.length) {
+              data.map((item, index) => {
+                item._id.toString() !== id[index] && Number(item.number_of_rooms) >= Number(checkReservation.number_of_rooms) ? availableHotels.push(item) : null
+              });
+            }
           }
           // Sorts result lowest price first
           const compare = (a, b) => {
