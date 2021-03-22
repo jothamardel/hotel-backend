@@ -42,8 +42,7 @@ exports.searchForReservation = (req, res, next) => {
       const availableResevation = [];
       if (data.length) {
         data.map(reservation => {
-          if (checkReservation.arrival_date > reservation.arrival_date &&
-            checkReservation.arrival_date > reservation.departure_date) {
+          if (checkReservation.arrival_date >= reservation.departure_date) {
             return availableResevation.push(reservation.hotel_id);
           }
           return;
@@ -67,6 +66,12 @@ exports.searchForReservation = (req, res, next) => {
               }
               return;
             });
+
+            // if (data.length) {
+            //   data.map((item, index) => {
+            //     item._id.toString() !== id[index] && item.number_of_rooms > checkReservation.number_of_rooms ? availableHotels.push(item) : null
+            //   });
+            // }
           }
           // Sorts result lowest price first
           const compare = (a, b) => {
