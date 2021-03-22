@@ -21,9 +21,12 @@ app.get('/', (req, res, next) => {
 
 app.use(hotelRoute);
 
-
 mongoose.connect(process.env.DATABASE_URL)
   .then(() => {
-    app.listen(PORT, () => console.log(`Server running on PORT: ${PORT}`));
+
+    app.listen(PORT, () => {
+      // module.exports = app;
+      console.log(`Server running on PORT: ${PORT}`)
+    });
   })
   .catch(console.log)
