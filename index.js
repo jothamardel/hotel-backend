@@ -21,7 +21,7 @@ app.get('/', (req, res, next) => {
 
 app.use(hotelRoute);
 
-mongoose.connect(process.env.DATABASE_URL)
+mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true })
   .then(() => {
 
     app.listen(PORT, () => {
